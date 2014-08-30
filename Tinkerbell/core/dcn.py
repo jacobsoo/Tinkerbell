@@ -36,6 +36,7 @@ class dcn(object):
                 print download_url
                 if download_url.endswith(".html")==True and download_url.startswith(self.path):
                     appID = d._mid(download_url, self.path, ".html")
+                    #http://android.d.cn/rm/red/2/407/
                     download_url = "http://android.d.cn/rm/red/" + appType + "/" + appID + "/"
                     filename, download_html = d._curl(download_url)
                     found = re.search('"pkgUrl":"(.+?)","', download_html, re.DOTALL)
