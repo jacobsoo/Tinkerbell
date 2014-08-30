@@ -29,12 +29,18 @@ def main(market):
             d._download(path, download_url)
     elif market=="as.baidu.com":
         print("[+] Downloading from %s in progress" % market)
-        mappings = {"software":"101", "asgame":"102"}
-        download_url = "http://as.baidu.com/a/item?docid="
-        for k, v in mappings.items():
-            path = "http://as.baidu.com/a/" + k + "?cid=" + v + "&s=1"
+        mappings = {"501","502","503","504","505","506","507","508","509","510"}
+        download_url = "http://shouji.baidu.com/software/list?cid="
+        for k in mappings:
+            path = "http://shouji.baidu.com/software/list?cid=" + k
             d = baidu()
             d._download(path, download_url)
+        game_mappings = {"401","402","403","404","405","406","407","408"}
+        game_download_url = "http://shouji.baidu.com/game/list?cid="
+        for k in game_mappings:
+            path = "http://shouji.baidu.com/game/list?cid=" + k
+            d = baidu()
+            d._download(path, game_download_url)
     elif market=="d.cn":
         print("[+] Downloading from %s in progress" % market)
         mappings = [ "software","game" ]

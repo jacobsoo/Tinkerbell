@@ -14,22 +14,19 @@ class baidu(object):
         
         d = curl()
         filename, download_html = d._curl(self.path)
-        _number_pages = re.search('上五页.*?&amp;s=1&amp;pn=(.*?)">', download_html, re.DOTALL|re.UNICODE)
+        found = re.search('data-total=(.*?) data-pn=0', download_html, re.DOTALL|re.UNICODE)
         try:
             os.makedirs('./Tinkerbell/downloads/baidu')
         except OSError:
             pass
         os.chdir("./Tinkerbell/downloads/baidu")
-        for i in range(1, int(_number_pages.group(1))+1):
-            page_html = self.path + "&pn=" + str(i)
-            _log("[+] Downloading from " + page_html)
-            filename, page_download_html = d._curl(page_html)
-            found = re.findall('data-download_url="(.+?)"', page_download_html, re.DOTALL|re.UNICODE)
-            package_names = re.findall('data-package="(.+?)"', page_download_html, re.DOTALL|re.UNICODE)
-            j = 0
+        _number_pages = found.group(1)
+        for i in range(1, int(_number_pages)+1):
+            self.download_url = self.path + "&page_num=" +str(i)
+            #_log("Downloading from %s" %self.download_url)
+            filename, download_html = d._curl(self.download_url)
+            found = re.findall('data_url="(.+?)"', download_html, re.DOTALL)
             for _apk_link in found:
-                filename = package_names[j] + ".apk"
-                _log("[+] Downloading " + _apk_link)
-                j += 1
-                d._download_apk(_apk_link, filename)
+                _download_name = os.path.basename(_apk_link.split('/', 1)[-1])
+                d._download_apk(_apk_link, _download_name)
         os.chdir('../../../')
