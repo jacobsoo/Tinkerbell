@@ -28,9 +28,9 @@ class dcn(object):
         os.chdir("./Tinkerbell/downloads/dcn")
         _number_pages = found.group(1)
         for i in range(1, int(_number_pages)+1):
-            self.download_url = self.download_url + str(i) + "/"
-            _log("Downloading from %s" %self.download_url)
-            filename, download_html = d._curl(self.download_url)
+            new_download_url = self.download_url + str(i) + "/"
+            _log("Downloading from %s" % new_download_url)
+            filename, download_html = d._curl(new_download_url)
             found = re.findall('<div class="list-left">.*?<a href="(.+?)"', download_html, re.DOTALL)
             for download_url in found:
                 print download_url

@@ -7,6 +7,7 @@ class curl:
     def __init__(self):
         self.name = None
         self.path = None
+        self.cookie = None
 
     #---------------------------------------------------
     # _curl : Grab the file based on url
@@ -36,6 +37,7 @@ class curl:
         headers.update(httpheaders)
         req = urllib2.Request(url, None, headers)
         resp = urllib2.urlopen(req)
+        self.cookie = resp.headers.get('Set-Cookie')
         content_length = resp.headers.get('Content-Length')
         filename = ""
         if resp.headers.get('Content-Disposition') is None:
@@ -69,7 +71,7 @@ class curl:
         print("[+] Downloading .apk file from %s" % url)
         filename, apk = self._curl(url)
         if filename=="":
-            dest_name = str(basename)
+            dest_name = basename
         else:
             dest_name = filename
         if apk !="":
@@ -79,3 +81,38 @@ class curl:
             time.sleep(10)
         else:
             _log('[*] Download failed.')
+            
+    #---------------------------------------------------
+    # _download_apk : Downloading of .apk file
+    #---------------------------------------------------
+    def _download_coolapk(self, url, referer, basename, **httpheaders):
+        print("[+] Downloading .apk file from %s" % url)
+        
+        ' get html text from url. '
+        headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0',
+                'Referer': referer,
+                'Host': 'www.coolapk.com',
+                'cookie': self.cookie
+        }
+        headers.update(httpheaders)
+        req = urllib2.Request(url, None, headers)
+        resp = urllib2.urlopen(req)
+        content_length = resp.headers.get('Content-Length')
+        filename = ""
+        if resp.headers.get('Content-Disposition') is None:
+            filename = ""
+        else:
+            filename = self._mid(resp.headers.get('Content-Disposition'), 'filename="','"')
+        data = resp.read()
+        if filename=="":
+            dest_name = str(basename)
+        else:
+            dest_name = filename
+        if data is None:
+            _log('[*] No download provided.')
+        else:
+            with open(dest_name, 'wb') as fw:
+                fw.write(data)
+            _log('[+] Download ok: %s' % dest_name)
+            time.sleep(10)

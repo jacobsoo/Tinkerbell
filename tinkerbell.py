@@ -6,12 +6,15 @@ from Tinkerbell.core.m163 import m163
 from Tinkerbell.core.appchina import appchina
 from Tinkerbell.core.baidu import baidu
 from Tinkerbell.core.dcn import dcn
+from Tinkerbell.core.coolapk import coolapk
+from Tinkerbell.core.gfan import gfan
 from Tinkerbell.core.slideme import slideme
+from Tinkerbell.core.tgbus import tgbus
 
 #---------------------------------------------------
 # List of supported 3rd Party Unofficial Android Marketplaces
 #---------------------------------------------------
-MarketList = ["m.163.com", "appchina.com", "as.baidu.com", "d.cn", "slideme.org"]
+MarketList = ["m.163.com", "appchina.com", "as.baidu.com", "d.cn", "coolapk.com", "gfan.com", "slideme.org", "tgbus.com"]
 
 def main(market):
     if market=="m.163.com":
@@ -21,7 +24,7 @@ def main(market):
         d._download('http://m.163.com/android/game/allgame/index.html', 'http://m.163.com/android/category/allgame/all-download-')
     elif market=="appchina.com":
         _log("[+] Downloading from %s in progress" % market)
-        mappings = ["411", "413", "415", "416", "418","423"]
+        mappings = ["301", "302", "303", "304", "305", "306", "307", "308", "309", "310", "311", "312", "313", "314", "315", "411", "412", "413", "414", "415", "416", "417", "418", "419", "420", "421", "422", "423", "424"]
         for k in mappings:
             path = "http://www.appchina.com/category/" + k + ".html"
             download_url = "http://www.appchina.com/category/" + k + "/1_1_"
@@ -49,10 +52,34 @@ def main(market):
             download_url = "http://android.d.cn/" + k + "/1/-1/-1/"
             d = dcn()
             d._download(path, download_url)
+    elif market=="coolapk.com":
+        print("[+] Downloading from %s in progress" % market)
+        mappings = [ "apk","game" ]
+        for k in mappings:
+            path = "http://www.coolapk.com/" + k + "/"
+            download_url = "http://www.coolapk.com/" + k + "/?p="
+            d = coolapk()
+            d._download(path, download_url)
+    elif market=="gfan.com":
+        print("[+] Downloading from %s in progress" % market)
+        mappings = [ "apps_7","games_8" ]
+        for k in mappings:
+            path = "http://apk.gfan.com/" + k + "_1_1.html"
+            download_url = "http://apk.gfan.com/" + k
+            d = gfan()
+            d._download(path, download_url)
     elif market=="slideme.org":
         print("[+] Downloading from %s in progress" % market)
         d = slideme()
         d._download("http://slideme.org/", "http://slideme.org")
+    elif market=="tgbus.com":
+        print("[+] Downloading from %s in progress" % market)
+        mappings = [ "soft","game" ]
+        for k in mappings:
+            path = "http://a.tgbus.com/" + k + "/"
+            download_url = "http://a.tgbus.com/" + k + "/"
+            d = tgbus()
+            d._download(path, download_url)
 if __name__ == "__main__":
     if (len(sys.argv) < 2):
         _log("[+] Usage: %s [marketplace]" % sys.argv[0])
