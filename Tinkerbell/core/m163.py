@@ -28,10 +28,10 @@ class m163(object):
             found = re.findall('m-t5">.*?<a href="(.+?)"', download_html, re.DOTALL)
             for _apk_link in found:
                 filename = os.path.basename(_apk_link)
-                #_log(_apk_link)
                 filename = re.findall('%2Ffile.m.163.com%2Fapp%2Ffree%2F.*?%2F.*?%2F(.+?).apk', filename, re.DOTALL)
-                _download_name = repr(unquote(filename[0])).replace('\'','')
-                _download_name = _download_name.replace('u\\','').replace('\\','')
-                _download_name = _download_name.split('/', 1)[-1] + ".apk"
-                d._download_apk(_apk_link,_download_name)
+                if len(filename)!=0:
+                    _download_name = repr(unquote(filename[0])).replace('\'','')
+                    _download_name = _download_name.replace('u\\','').replace('\\','')
+                    _download_name = _download_name.split('/', 1)[-1] + ".apk"
+                    d._download_apk(_apk_link,_download_name)
         os.chdir('../../../')
