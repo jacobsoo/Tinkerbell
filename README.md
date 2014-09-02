@@ -19,6 +19,7 @@ Supported Third-party Markets
 -----------------------------
 + 163: http://m.163.com (m.163.com)
 + AppChina: http://www.appchina.com (appchina.com)
++ Aptoide: http://www.aptoide.com (aptoide.com)
 + Baidu: http://as.baidu.com (as.baidu.com)
 + Coolapk: http://coolapk.com (coolapk.com)
 + android.d.cn: http://android.d.cn (android.d.cn)
