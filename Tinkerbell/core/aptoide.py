@@ -41,5 +41,7 @@ class aptoide(object):
                     filename, download_html = d._curl(download_url)
                     found = re.search('"path":"(.*?)","', download_html, re.DOTALL|re.UNICODE)
                     _apk_link = found.group(1)
+                    szTokenize = _apk_link.split('/')
+                    _download_name = szTokenize[len(szTokenize)-1]
                     d._download_apk(_apk_link, _download_name)
         os.chdir('../../../')
