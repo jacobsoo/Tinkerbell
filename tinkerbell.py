@@ -4,6 +4,7 @@ import xml.dom.minidom
 from Tinkerbell.common.out import _log
 from Tinkerbell.core.m163 import m163
 from Tinkerbell.core.appchina import appchina
+from Tinkerbell.core.aptoide import aptoide
 from Tinkerbell.core.baidu import baidu
 from Tinkerbell.core.dcn import dcn
 from Tinkerbell.core.coolapk import coolapk
@@ -14,7 +15,7 @@ from Tinkerbell.core.tgbus import tgbus
 #---------------------------------------------------
 # List of supported 3rd Party Unofficial Android Marketplaces
 #---------------------------------------------------
-MarketList = ["m.163.com", "appchina.com", "as.baidu.com", "d.cn", "coolapk.com", "gfan.com", "slideme.org", "tgbus.com"]
+MarketList = ["m.163.com", "appchina.com", "aptoide.com", "as.baidu.com", "d.cn", "coolapk.com", "gfan.com", "slideme.org", "tgbus.com"]
 
 def main(market):
     if market=="m.163.com":
@@ -22,6 +23,14 @@ def main(market):
         d = m163()
         d._download('http://m.163.com/android/category/allapp/index.html', 'http://m.163.com/android/category/allapp/all-download-')
         d._download('http://m.163.com/android/game/allgame/index.html', 'http://m.163.com/android/category/allgame/all-download-')
+    elif market=="aptoide.com":
+        print("[+] Downloading from %s in progress" % market)
+        mappings = [ "software","game" ]
+        for k in mappings:
+            path = "http://m.aptoide.com/phpajax/get_more_apps.php"
+            download_url = "http://m.aptoide.com/phpajax/get_more_apps.php"
+            d = aptoide()
+            d._download(path, download_url)
     elif market=="appchina.com":
         _log("[+] Downloading from %s in progress" % market)
         mappings = ["301", "302", "303", "304", "305", "306", "307", "308", "309", "310", "311", "312", "313", "314", "315", "411", "412", "413", "414", "415", "416", "417", "418", "419", "420", "421", "422", "423", "424"]
