@@ -32,12 +32,10 @@ class aptoide(object):
                 found = re.findall('<a class="item app" href="(.*?)">', download_html, re.DOTALL|re.UNICODE)
                 for download_url in found:
                     _log("[+] Downloading from %s" % download_url)
-                    _download_name = d._mid(download_url, "/market/" , "/")
-                    filename, download_html = d._curl(download_url)
-                    found = re.search('app_install.*?" href="(.*?)"><div>', download_html, re.DOTALL|re.UNICODE)
-                    _apk_link = found.group(1)
-                    apkID = _apk_link.split('uid=', 1)
-                    download_url = "https://www.aptoide.com/webservices/2/getApkInfo/id:" + apkID[1] + "/json"
+                    szTokenize = download_url.split('/')
+                    _apkID = szTokenize[len(szTokenize)-2]
+                    download_url = "https://www.aptoide.com/webservices/2/getApkInfo/id:" + _apkID + "/json"
+                    _log("[+] JSON file found in %s" % download_url)
                     filename, download_html = d._curl(download_url)
                     found = re.search('"path":"(.*?)","', download_html, re.DOTALL|re.UNICODE)
                     _apk_link = found.group(1)
