@@ -16,7 +16,9 @@ class appchina(object):
         d = curl()
         filename, download_html = d._curl(self.path)
         found = re.search('last"><a href="(.+?)" title="尾页', download_html, re.DOTALL)
-        _number_pages = d._mid(found.group(1), "/category/411/1_1_", "_1")
+        #_number_pages = d._mid(found.group(1), "/category/411/1_1_", "_1")
+        number = found.group(1).split('_')
+        _number_pages = number[2]
         try:
             os.makedirs('./Tinkerbell/downloads/appchina')
         except OSError:
