@@ -25,8 +25,10 @@ class baidu(object):
             self.download_url = self.path + "&page_num=" +str(i)
             _log("Downloading from %s" %self.download_url)
             filename, download_html = d._curl(self.download_url)
-            found = re.findall('data_url="(.+?)"', download_html, re.DOTALL)
-            for _apk_link in found:
-                _download_name = os.path.basename(_apk_link.split('/', 1)[-1])
-                d._download_apk(_apk_link, _download_name)
+            _download_links = re.findall('data_url="(.+?)"', download_html, re.DOTALL)
+            _data_package = re.findall('data_package="(.+?)"', download_html, re.DOTALL)
+            _data_versionname = re.findall('data_versionname="(.+?)"', download_html, re.DOTALL)
+            for i in range(len(_download_links)):
+                _download_name = _data_package[i] + "." + _data_versionname[i] + ".apk"
+                d._download_apk(_download_links[i], _download_name)
         os.chdir('../../../')
