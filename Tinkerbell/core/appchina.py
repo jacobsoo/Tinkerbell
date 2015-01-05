@@ -15,22 +15,23 @@ class appchina(object):
         
         d = curl()
         filename, download_html = d._curl(self.path)
-        found = re.search('last"><a href="(.+?)" title="尾页', download_html, re.DOTALL)
+        found = re.findall('<li class="dis_writebg_a"><a href="/category/(.+?).html">', download_html, re.DOTALL|re.UNICODE)
+        _num = found[6][4:]
         #_number_pages = d._mid(found.group(1), "/category/411/1_1_", "_1")
-        number = found.group(1).split('_')
-        _number_pages = number[2]
+        number = _num.split('_')
+        _number_pages = number[0]
         try:
             os.makedirs('./Tinkerbell/downloads/appchina')
         except OSError:
             pass
         os.chdir("./Tinkerbell/downloads/appchina")
         for i in range(1, int(_number_pages)+1):
-            download_url = self.download_url + str(i) + "_1_0_0_0.html"
+            download_url = self.download_url + str(i) + "_1_1_3_0_0_0.html"
             _log("Downloading from %s" %download_url)
             filename, download_html = d._curl(download_url)
-            found = re.findall("更多详情</a>.*?<a href='(.+?)' class=", download_html, re.DOTALL)
-            for _apk_link in found:
-                filename = os.path.basename(_apk_link)
-                _download_name = filename.split("?", 1)
-                d._download_apk(_apk_link, _download_name[0])
+            found = re.findall('查看详情</a>.*?<a href="(.+?)" class=', download_html, re.DOTALL|re.UNICODE)
+            name_found = re.findall('meta-packagename="(.+?)" meta-appid=', download_html, re.DOTALL|re.UNICODE)
+            for _apk_link, _download_name in zip(found, name_found):
+                _download_name = _download_name + ".apk"
+                d._download_appchinaapk(_apk_link, _download_name)
         os.chdir('../../../')

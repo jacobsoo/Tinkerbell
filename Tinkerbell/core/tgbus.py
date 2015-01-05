@@ -38,5 +38,5 @@ class tgbus(object):
                 _apk_link = 'http://a.tgbus.com/download/' + download_url + "/" + found.group(1)
                 found = re.search('您当前正在：<b>(.+?)</b></div>', download_html, re.DOTALL)
                 _download_name = download_url + ".apk"
-                d._download_apk(_apk_link, _download_name)
+                d._download_tgbus_apk(_apk_link, _download_name)
         os.chdir('../../../')

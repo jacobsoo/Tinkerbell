@@ -1,4 +1,4 @@
-import urllib, urllib2, time
+import urllib, urllib2, time, os
 import xml.dom.minidom
 
 from Tinkerbell.common.out import _log
@@ -29,9 +29,10 @@ class curl:
     #            Function will return filename and file contents
     #---------------------------------------------------
     def _do_curl(self, url, **httpheaders):
-        ' get html text from url. '
+        #' get html text from url. '
         headers = {
-                'User-Agent': 'Mozilla/5.0 (Linux; U; Android 4.0.3; ko-kr; LG-L160L Build/IML74K) AppleWebkit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30',
+                #'User-Agent': 'Mozilla/5.0 (Linux; U; Android 4.0.3; ko-kr; LG-L160L Build/IML74K) AppleWebkit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0',
                 'Referer': url
         }
         headers.update(httpheaders)
@@ -73,11 +74,13 @@ class curl:
         if filename=="":
             dest_name = basename
         else:
+            # the following code is added because of m.163.com
+            filename = urllib.unquote(filename).decode('utf8') 
             dest_name = filename
         if apk !="":
             with open(dest_name, 'wb') as fw:
                 fw.write(apk)
-            _log('[+] Download ok: %s' % dest_name)
+            _log('[+] Download ok: %s' % basename)
             time.sleep(10)
         else:
             _log('[*] Download failed.')
@@ -85,10 +88,83 @@ class curl:
     #---------------------------------------------------
     # _download_apk : Downloading of .apk file
     #---------------------------------------------------
+    def _download_gfan_apk(self, url, basename):
+        print("[+] Downloading .apk file from %s" % url)
+        filename, apk = self._curl(url)
+        if filename=="":
+            filename = urllib.unquote(basename).decode('utf8') 
+            dest_name = filename
+        else:
+            filename = urllib.unquote(filename).decode('utf8') 
+            dest_name = filename
+        if apk !="":
+            with open(dest_name, 'wb') as fw:
+                fw.write(apk)
+            _log('[+] Download ok: %s' % basename)
+            time.sleep(10)
+        else:
+            _log('[*] Download failed.')
+            
+    #---------------------------------------------------
+    # _download_apk : Downloading of .apk file from appchina.com
+    #---------------------------------------------------
+    def _download_appchinaapk(self, url, basename, **httpheaders):
+        print("[+] Downloading .apk file from %s" % url)
+        tmp = ""
+        
+        #' get html text from url. '
+        headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0',
+        }
+        headers.update(httpheaders)
+        req = urllib2.Request(url, None, headers)
+        resp = urllib2.urlopen(req)
+        content_length = resp.headers.get('Content-Length')
+        data = resp.read()
+        dest_name = str(basename)
+        if data is None:
+            _log('[*] No download provided.')
+        else:
+            with open(dest_name, 'wb') as fw:
+                fw.write(data)
+            _log('[+] Download ok: %s' % dest_name)
+            time.sleep(10)
+
+    #---------------------------------------------------
+    # _download_apk : Downloading of .apk file from tgbus.com
+    #---------------------------------------------------
+    def _download_tgbus_apk(self, url, basename, **httpheaders):
+        print("[+] Downloading .apk file from %s" % url)
+        
+        #' get html text from url. '
+        headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0',
+        }
+        headers.update(httpheaders)
+        req = urllib2.Request(url, None, headers)
+        resp = urllib2.urlopen(req)
+        re302 = resp.geturl()
+        
+        filename = ""
+        filename = urllib.unquote(os.path.basename(re302)).decode('utf8')
+        dest_name = filename
+        data = resp.read()
+        
+        if data is None:
+            _log('[*] No download provided.')
+        else:
+            with open(dest_name, 'wb') as fw:
+                fw.write(data)
+            _log('[+] Download ok: %s' % os.path.basename(re302))
+            time.sleep(10)
+
+    #---------------------------------------------------
+    # _download_apk : Downloading of .apk file from coolapk.com
+    #---------------------------------------------------
     def _download_coolapk(self, url, referer, basename, **httpheaders):
         print("[+] Downloading .apk file from %s" % url)
         
-        ' get html text from url. '
+        #' get html text from url. '
         headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0',
                 'Referer': referer,
@@ -103,7 +179,8 @@ class curl:
         if resp.headers.get('Content-Disposition') is None:
             filename = ""
         else:
-            filename = self._mid(resp.headers.get('Content-Disposition'), 'filename="','"')
+            tmp = self._mid(resp.headers.get('Content-Disposition'), 'filename="','"')
+            filename = urllib.unquote(tmp).decode('utf8') 
         data = resp.read()
         if filename=="":
             dest_name = str(basename)
@@ -114,5 +191,5 @@ class curl:
         else:
             with open(dest_name, 'wb') as fw:
                 fw.write(data)
-            _log('[+] Download ok: %s' % dest_name)
+            _log('[+] Download ok: %s' % tmp)
             time.sleep(10)

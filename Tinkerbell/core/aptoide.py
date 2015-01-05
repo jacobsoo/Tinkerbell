@@ -37,7 +37,7 @@ class aptoide(object):
                     download_url = "https://www.aptoide.com/webservices/2/getApkInfo/id:" + _apkID + "/json"
                     _log("[+] JSON file found in %s" % download_url)
                     filename, download_html = d._curl(download_url)
-                    found = re.search('"path":"(.*?)","', download_html, re.DOTALL|re.UNICODE)
+                    found = re.search('","path":"(.*?)","', download_html, re.DOTALL|re.UNICODE)
                     _apk_link = found.group(1)
                     szTokenize = _apk_link.split('/')
                     _download_name = szTokenize[len(szTokenize)-1]

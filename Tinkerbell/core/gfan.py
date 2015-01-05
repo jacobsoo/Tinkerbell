@@ -41,8 +41,9 @@ class gfan(object):
                     _apk_link = found.group(1)
                     _apk_link = "http://api.gfan.com/market/api/apk?" + _apk_link                    
                     found = re.search('<h4 class="curr-tit">(.+?)</h4>', download_html, re.DOTALL|re.UNICODE)
-                    _download_name = repr(found.group(1).decode('utf-8')).replace('\'','') + ".apk"
-                    _download_name = _download_name.replace('u\\','').replace('\\','')
+                    _download_name = found.group(1)
+                    version = re.search('<p>版 本 号：(.+?)</p>', download_html, re.DOTALL|re.UNICODE)
+                    _download_name = _download_name+"."+version.group(1)+".apk"
                     filename, download_html = d._curl(_apk_link)
-                    d._download_apk(_apk_link, _download_name)
+                    d._download_gfan_apk(_apk_link, _download_name)
         os.chdir('../../../')

@@ -38,7 +38,6 @@ class coolapk(object):
                     found = re.search('var apkDownloadUrl = "(.+?)";', download_html, re.DOTALL)
                     _apk_link = found.group(1)
                     _download_name = d._mid(_apk_link, "/dl?pn=","&v=") + ".apk"
-                    _apk_link = "http://coolapk.com" + _apk_link + '&extra=0:'                    
-                    print("_apk_link: %s" % _apk_link)
+                    _apk_link = "http://coolapk.com" + _apk_link + '&extra=0:'
                     d._download_coolapk(_apk_link, _apk_link, _download_name)
         os.chdir('../../../')
