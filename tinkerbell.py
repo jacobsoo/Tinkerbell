@@ -10,14 +10,22 @@ from Tinkerbell.core.baidu import baidu
 from Tinkerbell.core.dcn import dcn
 from Tinkerbell.core.coolapk import coolapk
 from Tinkerbell.core.gfan import gfan
+from Tinkerbell.core.liqucn import liqucn
 from Tinkerbell.core.slideme import slideme
 from Tinkerbell.core.tgbus import tgbus
 
 #---------------------------------------------------
 # List of supported 3rd Party Unofficial Android Marketplaces
 #---------------------------------------------------
-MarketList = ["m.163.com", "mm.10086.cn", "appchina.com", "aptoide.com", "as.baidu.com", "d.cn", "coolapk.com", "gfan.com", "slideme.org", "tgbus.com"]
-
+MarketList = ["m.163.com", "mm.10086.cn", "appchina.com", "aptoide.com", "as.baidu.com", "d.cn", "coolapk.com", "gfan.com", "liqucn.com", "slideme.org", "tgbus.com"]
+'''
+http://www.nduoa.com/cat83
+http://www.mumayi.com/android/game
+http://mall.soc.io/apps
+http://www.anzhi.com/
+http://blog.andrototal.org/post/53390790840/unofficial-android-marketplaces
+https://github.com/jinyiming321/crawler/blob/master/monitor_market.pl
+'''
 def main(market):
     if market=="m.163.com":
         _log("[+] Downloading from %s in progress" % market)
@@ -83,6 +91,12 @@ def main(market):
             download_url = "http://apk.gfan.com/" + k
             d = gfan()
             d._download(path, download_url)
+    elif market=="liqucn.com":
+        d = liqucn()
+        software_path = "http://os-android.liqucn.com/rj/"
+        game_path = "http://os-android.liqucn.com/yx/"
+        download_url = "index_"
+        d._download(software_path, download_url)
     elif market=="slideme.org":
         print("[+] Downloading from %s in progress" % market)
         d = slideme()

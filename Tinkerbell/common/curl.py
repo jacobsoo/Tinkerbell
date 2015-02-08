@@ -1,8 +1,11 @@
-import urllib, urllib2, time, os
+import urllib, urllib2, time, os, socket
 import xml.dom.minidom
 
 from Tinkerbell.common.out import _log
 
+class MyException(Exception):
+    pass
+    
 class curl:
     def __init__(self):
         self.name = None
@@ -166,30 +169,35 @@ class curl:
         
         #' get html text from url. '
         headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:36.0) Gecko/20100101 Firefox/36.0',
                 'Referer': referer,
                 'Host': 'www.coolapk.com',
-                'cookie': self.cookie
+                'cookie': self.cookie,
+                'Connection': 'keep-alive'
         }
         headers.update(httpheaders)
         req = urllib2.Request(url, None, headers)
-        resp = urllib2.urlopen(req)
-        content_length = resp.headers.get('Content-Length')
-        filename = ""
-        if resp.headers.get('Content-Disposition') is None:
+        try:
+            resp = urllib2.urlopen(req, timeout = 10)
+            content_length = resp.headers.get('Content-Length')
             filename = ""
-        else:
-            tmp = self._mid(resp.headers.get('Content-Disposition'), 'filename="','"')
-            filename = urllib.unquote(tmp).decode('utf8') 
-        data = resp.read()
-        if filename=="":
-            dest_name = str(basename)
-        else:
-            dest_name = filename
-        if data is None:
-            _log('[*] No download provided.')
-        else:
-            with open(dest_name, 'wb') as fw:
-                fw.write(data)
-            _log('[+] Download ok: %s' % tmp)
-            time.sleep(10)
+            if resp.headers.get('Content-Disposition') is None:
+                filename = ""
+            else:
+                tmp = self._mid(resp.headers.get('Content-Disposition'), 'filename="','"')
+                filename = urllib.unquote(tmp).decode('utf8') 
+            data = resp.read()
+            if filename=="":
+                dest_name = str(basename)
+            else:
+                dest_name = filename
+            if data is None:
+                _log('[*] No download provided.')
+            else:
+                with open(dest_name, 'wb') as fw:
+                    fw.write(data)
+                _log('[+] Download ok: %s' % basename)
+                time.sleep(10)
+        except urllib2.HTTPError, e:
+            _log("There was an error: %s" % e)
+        

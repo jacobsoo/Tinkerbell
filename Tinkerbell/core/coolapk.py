@@ -24,7 +24,6 @@ class coolapk(object):
             pass
         os.chdir("./Tinkerbell/downloads/coolapk")
         _number_pages = found.group(1)
-        print _number_pages
         for i in range(1, int(_number_pages)+1):
             new_download_url = self.download_url + str(i)
             _log("[+] Downloading from %s" % new_download_url)
@@ -38,6 +37,6 @@ class coolapk(object):
                     found = re.search('var apkDownloadUrl = "(.+?)";', download_html, re.DOTALL)
                     _apk_link = found.group(1)
                     _download_name = d._mid(_apk_link, "/dl?pn=","&v=") + ".apk"
-                    _apk_link = "http://coolapk.com" + _apk_link + '&extra=0:'
-                    d._download_coolapk(_apk_link, _apk_link, _download_name)
+                    _apk_link = "http://coolapk.com" + _apk_link #+ '&extra=0:'
+                    d._download_coolapk(_apk_link, download_url, _download_name)
         os.chdir('../../../')
