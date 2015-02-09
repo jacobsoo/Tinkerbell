@@ -18,14 +18,7 @@ from Tinkerbell.core.tgbus import tgbus
 # List of supported 3rd Party Unofficial Android Marketplaces
 #---------------------------------------------------
 MarketList = ["m.163.com", "mm.10086.cn", "appchina.com", "aptoide.com", "as.baidu.com", "d.cn", "coolapk.com", "gfan.com", "liqucn.com", "slideme.org", "tgbus.com"]
-'''
-http://www.nduoa.com/cat83
-http://www.mumayi.com/android/game
-http://mall.soc.io/apps
-http://www.anzhi.com/
-http://blog.andrototal.org/post/53390790840/unofficial-android-marketplaces
-https://github.com/jinyiming321/crawler/blob/master/monitor_market.pl
-'''
+
 def main(market):
     if market=="m.163.com":
         _log("[+] Downloading from %s in progress" % market)
