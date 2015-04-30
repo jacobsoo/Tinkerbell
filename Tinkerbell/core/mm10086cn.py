@@ -24,11 +24,12 @@ class mm10086cn(object):
         os.chdir("./Tinkerbell/downloads/mm10086cn")
         _number_pages = found.group(1)
         for i in range(1, int(_number_pages)+1):
-            for j in range(1,5):
+            for j in range(1,3):
                 page_url = path + '&p=' + str(i) + '&screen=' + str(j)
                 _log("[+] Scraping from %s" % page_url)
                 filename, download_html = d._curl(page_url)
                 found = re.findall('href="/download/android/(.*?)" target="', download_html, re.DOTALL|re.UNICODE)
+                print(len(found))
                 for new_download_url in found:
                     _apk_link = "http://mm.10086.cn/download/android/" + new_download_url
                     _download_name = "unsure.apk"

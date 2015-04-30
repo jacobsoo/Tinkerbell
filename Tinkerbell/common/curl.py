@@ -75,7 +75,8 @@ class curl:
         print("[+] Downloading .apk file from %s" % url)
         filename, apk = self._curl(url)
         if filename=="":
-            dest_name = basename
+            filename = urllib.unquote(basename).decode('utf8') 
+            dest_name = filename
         else:
             # the following code is added because of m.163.com
             filename = urllib.unquote(filename).decode('utf8') 
@@ -87,7 +88,7 @@ class curl:
             time.sleep(10)
         else:
             _log('[*] Download failed.')
-            
+    
     #---------------------------------------------------
     # _download_apk : Downloading of .apk file
     #---------------------------------------------------
@@ -113,7 +114,6 @@ class curl:
     #---------------------------------------------------
     def _download_appchinaapk(self, url, basename, **httpheaders):
         print("[+] Downloading .apk file from %s" % url)
-        tmp = ""
         
         #' get html text from url. '
         headers = {

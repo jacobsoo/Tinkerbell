@@ -4,6 +4,7 @@ import xml.dom.minidom
 from Tinkerbell.common.out import _log
 from Tinkerbell.core.m163 import m163
 from Tinkerbell.core.mm10086cn import mm10086cn
+from Tinkerbell.core.androidappru import androidappru
 from Tinkerbell.core.appchina import appchina
 from Tinkerbell.core.aptoide import aptoide
 from Tinkerbell.core.baidu import baidu
@@ -12,33 +13,32 @@ from Tinkerbell.core.coolapk import coolapk
 from Tinkerbell.core.gfan import gfan
 from Tinkerbell.core.liqucn import liqucn
 from Tinkerbell.core.slideme import slideme
+from Tinkerbell.core.mumayi import mumayi
 from Tinkerbell.core.tgbus import tgbus
 
 #---------------------------------------------------
 # List of supported 3rd Party Unofficial Android Marketplaces
 #---------------------------------------------------
-MarketList = ["m.163.com", "mm.10086.cn", "appchina.com", "aptoide.com", "as.baidu.com", "d.cn", "coolapk.com", "gfan.com", "liqucn.com", "slideme.org", "tgbus.com"]
-'''
-http://www.nduoa.com/cat83
-http://www.mumayi.com/android/game
-http://mall.soc.io/apps
-http://www.anzhi.com/
-http://blog.andrototal.org/post/53390790840/unofficial-android-marketplaces
-https://github.com/jinyiming321/crawler/blob/master/monitor_market.pl
-'''
+MarketList = ["m.163.com", "mm.10086.cn", "android-app.ru", "appchina.com", "aptoide.com", "as.baidu.com", "d.cn", "coolapk.com", "gfan.com", "liqucn.com", "mumayi.com", "slideme.org", "tgbus.com"]
+
 def main(market):
     if market=="m.163.com":
         _log("[+] Downloading from %s in progress" % market)
         d = m163()
         d._download('http://m.163.com/android/category/allapp/index.html', 'http://m.163.com/android/category/allapp/all-download-')
         d._download('http://m.163.com/android/game/allgame/index.html', 'http://m.163.com/android/category/allgame/all-download-')
+    elif market=="android-app.ru":
+        _log("[+] Downloading from %s in progress" % market)
+        d = androidappru()
+        d._download('http://www.android-app.ru/','utilites','http://www.android-app.ru/utilites/')
+        d._download('http://www.android-app.ru/','games','http://www.android-app.ru/games/')
     elif market=="mm.10086.cn":
         _log("[+] Downloading from %s in progress" % market)
         d = mm10086cn()
         d._download('http://mm.10086.cn/android/software/qbrj?pay=1', 'http://mm.10086.cn/android/info/')
         d._download('http://mm.10086.cn/android/game/qbyx?pay=1', 'http://mm.10086.cn/android/info/')
     elif market=="aptoide.com":
-        print("[+] Downloading from %s in progress" % market)
+        _log("[+] Downloading from %s in progress" % market)
         mappings = [ "software","game" ]
         for k in mappings:
             path = "http://m.aptoide.com/phpajax/get_more_apps.php"
@@ -54,7 +54,7 @@ def main(market):
             d = appchina()
             d._download(path, download_url)
     elif market=="as.baidu.com":
-        print("[+] Downloading from %s in progress" % market)
+        _log("[+] Downloading from %s in progress" % market)
         mappings = {"501","502","503","504","505","506","507","508","509","510"}
         download_url = "http://shouji.baidu.com/software/list?cid="
         for k in mappings:
@@ -68,7 +68,7 @@ def main(market):
             d = baidu()
             d._download(path, game_download_url)
     elif market=="d.cn":
-        print("[+] Downloading from %s in progress" % market)
+        _log("[+] Downloading from %s in progress" % market)
         mappings = [ "software","game" ]
         for k in mappings:
             path = "http://android.d.cn/" + k + "/"
@@ -76,7 +76,7 @@ def main(market):
             d = dcn()
             d._download(path, download_url)
     elif market=="coolapk.com":
-        print("[+] Downloading from %s in progress" % market)
+        _log("[+] Downloading from %s in progress" % market)
         mappings = [ "apk","game" ]
         for k in mappings:
             path = "http://www.coolapk.com/" + k + "/"
@@ -84,7 +84,7 @@ def main(market):
             d = coolapk()
             d._download(path, download_url)
     elif market=="gfan.com":
-        print("[+] Downloading from %s in progress" % market)
+        _log("[+] Downloading from %s in progress" % market)
         mappings = [ "apps_7","games_8" ]
         for k in mappings:
             path = "http://apk.gfan.com/" + k + "_1_1.html"
@@ -97,12 +97,28 @@ def main(market):
         game_path = "http://os-android.liqucn.com/yx/"
         download_url = "index_"
         d._download(software_path, download_url)
+        d._download(game_path, download_url)
+    elif market=="mumayi.com":
+        _log("[+] Downloading from %s in progress" % market)
+        mappings = {"xitonggongju","zhutibizhi","wangluoliulan","jishitongxun","shejiaoweibo","yinyueshipin","sheyingtuxiang","tianqishijian","anquanshadu","xinwenzixun","tonghuazengqiang","duanxinzengqiang","bianjieshenghuo","chuxingditu","gouwulicia","jiaoyuxuexi","shangwubangong","yiliaobaojian","xiuxianyule","tushudongman"}
+        download_url = "http://www.mumayi.com/"
+        for k in mappings:
+            path = "http://www.mumayi.com/android/" + k
+            _log("Proceeding to %s" % path)
+            d = mumayi()
+            d._download(path, k, download_url)
+        game_mappings = {"juesebanyan","feixingyouxi","tiyujinji","yizixiuxian","qipaitiandi","saicheyouxi","dongzuoyouxi","dongzuoyouxi","youximoni","youximoni"}
+        game_download_url = "http://www.mumayi.com/"
+        for k in game_mappings:
+            path = "http://www.mumayi.com/android/" + k
+            d = mumayi()
+            d._download(path, k, game_download_url)
     elif market=="slideme.org":
-        print("[+] Downloading from %s in progress" % market)
+        _log("[+] Downloading from %s in progress" % market)
         d = slideme()
         d._download("http://slideme.org/", "http://slideme.org")
     elif market=="tgbus.com":
-        print("[+] Downloading from %s in progress" % market)
+        _log("[+] Downloading from %s in progress" % market)
         mappings = [ "soft","game" ]
         for k in mappings:
             path = "http://a.tgbus.com/" + k + "/"
