@@ -1,4 +1,4 @@
-import urllib, urllib2, time, os, socket
+import urllib, urllib2, time, os, socket, sys
 import xml.dom.minidom
 
 from Tinkerbell.common.out import _log
@@ -69,25 +69,39 @@ class curl:
         return s[n1 + len(start) : n2]
 
     #---------------------------------------------------
+    # convertSize : Convert the size of the file
+    #---------------------------------------------------
+    def convertSize(self, size):
+        for x in ['bytes','KB','MB','GB']:
+            if size < 1024.0:
+                return "%3.1f%s" % (size, x)
+            size /= 1024.0
+        return "%3.1f%s" % (size, 'TB')
+    
+    #---------------------------------------------------
     # _download_apk : Downloading of .apk file
     #---------------------------------------------------
     def _download_apk(self, url, basename):
         print("[+] Downloading .apk file from %s" % url)
         filename, apk = self._curl(url)
-        if filename=="":
-            filename = urllib.unquote(basename).decode('utf8') 
-            dest_name = filename
-        else:
-            # the following code is added because of m.163.com
-            filename = urllib.unquote(filename).decode('utf8') 
-            dest_name = filename
-        if apk !="":
-            with open(dest_name, 'wb') as fw:
-                fw.write(apk)
-            _log('[+] Download ok: %s' % basename)
-            time.sleep(10)
-        else:
-            _log('[*] Download failed.')
+        try:
+            if filename=="":
+                filename = urllib.unquote(basename).decode('utf8') 
+                dest_name = filename
+            else:
+                # the following code is added because of m.163.com
+                filename = urllib.unquote(filename).decode('utf8') 
+                dest_name = filename
+            if apk !="":
+                with open(dest_name, 'wb') as fw:
+                    fw.write(apk)
+                _log('[+] Download ok: %s' % basename)
+                time.sleep(5)
+            else:
+                _log('[*] Download failed.')
+        except urllib2.HTTPError, e:
+            _log("There was an error: %s" % e)
+            pass
     
     #---------------------------------------------------
     # _download_apk : Downloading of .apk file
@@ -105,7 +119,7 @@ class curl:
             with open(dest_name, 'wb') as fw:
                 fw.write(apk)
             _log('[+] Download ok: %s' % basename)
-            time.sleep(10)
+            time.sleep(5)
         else:
             _log('[*] Download failed.')
             
@@ -113,6 +127,7 @@ class curl:
     # _download_apk : Downloading of .apk file from appchina.com
     #---------------------------------------------------
     def _download_appchinaapk(self, url, basename, **httpheaders):
+        socket.setdefaulttimeout(15)
         print("[+] Downloading .apk file from %s" % url)
         
         #' get html text from url. '
@@ -121,17 +136,26 @@ class curl:
         }
         headers.update(httpheaders)
         req = urllib2.Request(url, None, headers)
-        resp = urllib2.urlopen(req)
-        content_length = resp.headers.get('Content-Length')
-        data = resp.read()
-        dest_name = str(basename)
-        if data is None:
-            _log('[*] No download provided.')
-        else:
-            with open(dest_name, 'wb') as fw:
-                fw.write(data)
-            _log('[+] Download ok: %s' % dest_name)
-            time.sleep(10)
+        try:
+            resp = urllib2.urlopen(req, timeout = 60)
+            content_length = resp.headers.get('Content-Length')
+            _log("[+] The file's length is %s" % self.convertSize(int(content_length)))
+            data = resp.read()
+            _log("[*] Reading of data is done.")
+            dest_name = str(basename)
+            if data is None:
+                _log('[*] No download provided.')
+            else:
+                with open(dest_name, 'wb') as fw:
+                    fw.write(data)
+                _log('[+] Download ok: %s' % dest_name)
+                time.sleep(3)
+        except urllib2.HTTPError, e:
+            _log("There was an error: %s" % e)
+            pass
+        except socket.error, e:
+            _log("There was an error: %s" % e)
+            pass
 
     #---------------------------------------------------
     # _download_apk : Downloading of .apk file from tgbus.com
@@ -145,21 +169,37 @@ class curl:
         }
         headers.update(httpheaders)
         req = urllib2.Request(url, None, headers)
-        resp = urllib2.urlopen(req)
-        re302 = resp.geturl()
-        
-        filename = ""
-        filename = urllib.unquote(os.path.basename(re302)).decode('utf8')
-        dest_name = filename
-        data = resp.read()
-        
-        if data is None:
-            _log('[*] No download provided.')
-        else:
-            with open(dest_name, 'wb') as fw:
-                fw.write(data)
-            _log('[+] Download ok: %s' % os.path.basename(re302))
-            time.sleep(10)
+        try:
+            resp = urllib2.urlopen(req, timeout = 90)
+            content_length = resp.headers.get('Content-Length')
+            print content_length
+            _log("[+] The file's length is %s" % self.convertSize(int(content_length)))
+            filename = ""            
+            re302 = resp.geturl()
+            print("[Redirecting to] %s " % re302)
+            
+            if resp.headers.get('Content-Disposition') is None:
+                filename = os.path.basename(re302)
+            else:
+                tmp = self._mid(resp.headers.get('Content-Disposition'), 'filename="','"')
+                filename = urllib.unquote(tmp).decode('utf8') 
+            if filename=="":
+                dest_name = str(basename)
+            else:
+                dest_name = filename
+            data = resp.read()
+            _log("[*] Reading of data is done.")
+            
+            if data is None:
+                _log('[*] No download provided.')
+            else:
+                with open(dest_name, 'wb') as fw:
+                    fw.write(data)
+                _log('[+] Download ok: %s' % os.path.basename(re302))
+                time.sleep(4)
+        except urllib2.HTTPError, e:
+            _log("There was an error: %s" % e)
+            pass
 
     #---------------------------------------------------
     # _download_apk : Downloading of .apk file from coolapk.com
@@ -178,26 +218,33 @@ class curl:
         headers.update(httpheaders)
         req = urllib2.Request(url, None, headers)
         try:
-            resp = urllib2.urlopen(req, timeout = 10)
+            resp = urllib2.urlopen(req, timeout = 60)
             content_length = resp.headers.get('Content-Length')
             filename = ""
+            
+            re302 = resp.geturl()
+            print("[Redirecting to] %s " % re302)
+            
             if resp.headers.get('Content-Disposition') is None:
                 filename = ""
             else:
                 tmp = self._mid(resp.headers.get('Content-Disposition'), 'filename="','"')
                 filename = urllib.unquote(tmp).decode('utf8') 
-            data = resp.read()
             if filename=="":
                 dest_name = str(basename)
             else:
                 dest_name = filename
+            data = resp.read()
+            
             if data is None:
                 _log('[*] No download provided.')
             else:
                 with open(dest_name, 'wb') as fw:
                     fw.write(data)
-                _log('[+] Download ok: %s' % basename)
-                time.sleep(10)
+                _log('[+] Download ok: %s' % os.path.basename(re302))
+                time.sleep(8)
         except urllib2.HTTPError, e:
             _log("There was an error: %s" % e)
-        
+            sys.exc_clear()
+            pass
+            

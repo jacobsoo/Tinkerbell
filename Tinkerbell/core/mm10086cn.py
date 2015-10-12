@@ -29,7 +29,6 @@ class mm10086cn(object):
                 _log("[+] Scraping from %s" % page_url)
                 filename, download_html = d._curl(page_url)
                 found = re.findall('href="/download/android/(.*?)" target="', download_html, re.DOTALL|re.UNICODE)
-                print(len(found))
                 for new_download_url in found:
                     _apk_link = "http://mm.10086.cn/download/android/" + new_download_url
                     _download_name = "unsure.apk"

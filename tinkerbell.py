@@ -19,7 +19,6 @@ from Tinkerbell.core.tgbus import tgbus
 #---------------------------------------------------
 # List of supported 3rd Party Unofficial Android Marketplaces
 #---------------------------------------------------
-
 MarketList = ["m.163.com", "mm.10086.cn", "android-app.ru", "appchina.com", "aptoide.com", "as.baidu.com", "d.cn", "coolapk.com", "gfan.com", "liqucn.com", "mumayi.com", "slideme.org", "tgbus.com"]
 
 def main(market):
